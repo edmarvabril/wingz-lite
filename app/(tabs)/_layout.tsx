@@ -2,19 +2,15 @@ import { Tabs } from "expo-router";
 import React from "react";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { StyleSheet, View } from "react-native";
 import { palette } from "@/constants/colors";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: palette.brightGreen,
         tabBarInactiveTintColor: palette.darkGray,
-        headerShown: false,
         tabBarStyle: {
           backgroundColor: palette.darkBlue,
         },
