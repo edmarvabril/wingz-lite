@@ -1,11 +1,11 @@
-import { DriverLocation } from "./driverTypes";
+import { LatLng } from "react-native-maps";
 
 export interface RideRequest {
   id: string;
   userId: string;
   driverId: string | null;
-  pickupLocation: DriverLocation;
-  destination: DriverLocation;
+  pickupLocation: LatLng;
+  destination: LatLng;
   status: "pending" | "accepted" | "ongoing" | "completed";
   pickupTime: string;
   timestamp: string;
