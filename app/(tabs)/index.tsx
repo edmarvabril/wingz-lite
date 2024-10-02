@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
+import { StatusBar } from "expo-status-bar";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { selectDriverLocation } from "@/redux/selectors/driverSelectors";
 import { selectRideRequests } from "@/redux/selectors/rideSelectors";
 import { setDriverLocation } from "@/redux/slices/driverSlice";
 import { setRideRequests } from "@/redux/slices/rideSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  fetchDriverLocation,
+  generateMockRideRequests,
+  reverseGeocode,
+} from "@/helpers/locationHelpers";
 import { RideRequest } from "@/types/rideTypes";
-import { StatusBar } from "expo-status-bar";
+import { FetchingLocation } from "@/components/FetchingLocation";
 
 const DriveScreen: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -22,75 +21,34 @@ const DriveScreen: React.FC = () => {
   const rideRequests = useAppSelector(selectRideRequests);
 
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [pickupNames, setPickupNames] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setLocationError("Permission to access location was denied.");
-        return;
+      try {
+        const location = await fetchDriverLocation();
+        if (!location) {
+          setLocationError("Permission to access location was denied.");
+          return;
+        }
+
+        dispatch(setDriverLocation(location));
+
+        const mockRideRequests: RideRequest[] =
+          generateMockRideRequests(location);
+        dispatch(setRideRequests(mockRideRequests));
+
+        for (let ride of mockRideRequests) {
+          const address = await reverseGeocode(
+            ride.pickupLocation.latitude,
+            ride.pickupLocation.longitude
+          );
+          setPickupNames((prev) => ({ ...prev, [ride.id]: address }));
+        }
+      } catch (error) {
+        console.error("Error during location fetching:", error);
+        setLocationError("Failed to fetch location.");
       }
-
-      let location = await Location.getCurrentPositionAsync({});
-      dispatch(
-        setDriverLocation({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        })
-      );
-
-      const mockRideRequests: RideRequest[] = [
-        {
-          id: "1",
-          userId: "111",
-          driverId: null,
-          pickupLocation: {
-            latitude: location.coords.latitude + 0.01,
-            longitude: location.coords.longitude + 0.01,
-          },
-          destination: {
-            latitude: location.coords.latitude + 0.05,
-            longitude: location.coords.longitude + 0.05,
-          },
-          status: "pending",
-          pickupTime: new Date().toISOString(),
-          timestamp: new Date().toISOString(),
-        },
-        {
-          id: "2",
-          userId: "222",
-          driverId: null,
-          pickupLocation: {
-            latitude: location.coords.latitude + 0.02,
-            longitude: location.coords.longitude + 0.02,
-          },
-          destination: {
-            latitude: location.coords.latitude + 0.06,
-            longitude: location.coords.longitude + 0.06,
-          },
-          status: "pending",
-          pickupTime: new Date().toISOString(),
-          timestamp: new Date().toISOString(),
-        },
-        {
-          id: "3",
-          userId: "333",
-          driverId: null,
-          pickupLocation: {
-            latitude: location.coords.latitude + 0.02,
-            longitude: location.coords.longitude + 0.02,
-          },
-          destination: {
-            latitude: location.coords.latitude + 0.06,
-            longitude: location.coords.longitude + 0.06,
-          },
-          status: "pending",
-          pickupTime: new Date().toISOString(),
-          timestamp: new Date().toISOString(),
-        },
-      ];
-
-      dispatch(setRideRequests(mockRideRequests));
     })();
   }, [dispatch]);
 
@@ -107,12 +65,7 @@ const DriveScreen: React.FC = () => {
     driverLocation.latitude === null ||
     driverLocation.longitude === null
   ) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2ECC71" />
-        <Text>Fetching location...</Text>
-      </View>
-    );
+    return <FetchingLocation />;
   }
 
   return (
@@ -142,7 +95,7 @@ const DriveScreen: React.FC = () => {
             key={ride.id}
             coordinate={ride.pickupLocation}
             title="Ride Request"
-            description={`Pickup: ${ride.pickupLocation.latitude}, ${ride.pickupLocation.longitude}`}
+            description={`Pickup: ${pickupNames[ride.id] || "Loading..."}`}
             onPress={() => console.log(`Ride request ${ride.id} selected`)}
           />
         ))}

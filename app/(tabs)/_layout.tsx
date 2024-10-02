@@ -31,7 +31,7 @@ export default function TabLayout() {
             <TabBarIcon
               name={focused ? "time" : "time-outline"}
               color={color}
-              size={34}
+              size={38}
             />
           ),
         }}
@@ -52,7 +52,7 @@ export default function TabLayout() {
               <TabBarIcon
                 name={focused ? "car-sport" : "car-sport-outline"}
                 color={palette.darkBlue}
-                size={34}
+                size={38}
               />
             </View>
           ),
