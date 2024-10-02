@@ -3,14 +3,14 @@ import React from "react";
 
 type Props = {};
 
-const drive = (props: Props) => {
+const profile = (props: Props) => {
   return (
     <View>
-      <Text>drive</Text>
+      <Text>profile</Text>
     </View>
   );
 };
 
-export default drive;
+export default profile;
 
 const styles = StyleSheet.create({});

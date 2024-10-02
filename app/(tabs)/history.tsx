@@ -3,14 +3,14 @@ import React from "react";
 
 type Props = {};
 
-const drive = (props: Props) => {
+const history = (props: Props) => {
   return (
     <View>
-      <Text>drive</Text>
+      <Text>history</Text>
     </View>
   );
 };
 
-export default drive;
+export default history;
 
 const styles = StyleSheet.create({});
