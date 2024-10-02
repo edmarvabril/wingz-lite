@@ -3,6 +3,8 @@ import React from "react";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { StyleSheet, View } from "react-native";
+import { palette } from "@/constants/colors";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -10,8 +12,12 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "steelblue",
+        tabBarActiveTintColor: palette.brightGreen,
+        tabBarInactiveTintColor: palette.darkGray,
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: palette.darkBlue,
+        },
       }}
     >
       <Tabs.Screen
@@ -31,7 +37,19 @@ export default function TabLayout() {
         options={{
           title: "Drive",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? "car" : "car-outline"} color={color} />
+            <View
+              style={[
+                styles.driveTabContainer,
+                {
+                  backgroundColor: focused ? color : palette.lightGray,
+                },
+              ]}
+            >
+              <TabBarIcon
+                name={focused ? "car" : "car-outline"}
+                color={palette.darkBlue}
+              />
+            </View>
           ),
         }}
       />
@@ -50,3 +68,18 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  driveTabContainer: {
+    height: 60,
+    width: 60,
+    borderRadius: 60 / 2,
+    borderWidth: 4,
+    position: "absolute",
+    borderColor: palette.darkBlue,
+    zIndex: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    top: -28,
+  },
+});
