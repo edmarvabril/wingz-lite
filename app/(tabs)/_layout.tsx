@@ -14,6 +14,13 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: palette.darkBlue,
         },
+        tabBarShowLabel: false,
+        headerStyle: {
+          backgroundColor: palette.darkBlue,
+        },
+        headerTitleStyle: {
+          color: palette.white,
+        },
       }}
     >
       <Tabs.Screen
@@ -24,6 +31,7 @@ export default function TabLayout() {
             <TabBarIcon
               name={focused ? "time" : "time-outline"}
               color={color}
+              size={38}
             />
           ),
         }}
@@ -42,8 +50,9 @@ export default function TabLayout() {
               ]}
             >
               <TabBarIcon
-                name={focused ? "car" : "car-outline"}
+                name={focused ? "car-sport" : "car-sport-outline"}
                 color={palette.darkBlue}
+                size={38}
               />
             </View>
           ),
@@ -57,6 +66,7 @@ export default function TabLayout() {
             <TabBarIcon
               name={focused ? "person" : "person-outline"}
               color={color}
+              size={34}
             />
           ),
         }}
@@ -76,6 +86,6 @@ const styles = StyleSheet.create({
     zIndex: 10,
     justifyContent: "center",
     alignItems: "center",
-    top: -28,
+    top: -20,
   },
 });

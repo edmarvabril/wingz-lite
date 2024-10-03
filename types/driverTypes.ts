@@ -1,11 +1,6 @@
+import { LatLng } from "react-native-maps";
 import { RideRequest } from "./rideTypes";
-
-export interface DriverLocation {
-  latitude: number | null;
-  longitude: number | null;
-}
-
 export interface DriverState {
-  location: DriverLocation;
+  location: LatLng;
   ongoingRide: RideRequest | null;
 }
