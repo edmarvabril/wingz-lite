@@ -106,26 +106,30 @@ const OngoingRideScreen: React.FC = () => {
 
       <View style={styles.buttonContainer}>
         {isPickedUp ? (
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handleDropOffPassenger}
-          >
-            <Text style={styles.buttonText}>Complete Drive</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleDropOffPassenger}
+            >
+              <Text style={styles.buttonText}>Complete Drive</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancelRide}
+            >
+              <Text style={styles.buttonText}>Cancel Drive</Text>
+            </TouchableOpacity>
+          </>
         ) : (
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handlePickUpPassenger}
-          >
-            <Text style={styles.buttonText}>Start Drive</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handlePickUpPassenger}
+            >
+              <Text style={styles.buttonText}>Start Drive</Text>
+            </TouchableOpacity>
+          </>
         )}
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={handleCancelRide}
-        >
-          <Text style={styles.buttonText}>Cancel Drive</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );

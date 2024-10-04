@@ -13,6 +13,7 @@ import {
   setRideRequests,
   acceptRide,
   setSelectedRide,
+  removeRideRequest,
 } from "@/redux/slices/rideSlice";
 import {
   fetchDriverLocation,
@@ -23,11 +24,11 @@ import { RideRequest } from "@/types/rideTypes";
 import { FetchingLocation } from "@/components/FetchingLocation";
 import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RideRequestBottomSheet } from "@/components/RideRequestBottomSheet";
-import { useRouter } from "expo-router"; // Import useRouter for navigation
+import { useRouter } from "expo-router";
 
 const DriveScreen: React.FC = () => {
   const dispatch = useAppDispatch();
-  const router = useRouter(); // Get the router instance for navigation
+  const router = useRouter();
   const driverLocation = useAppSelector(selectDriverLocation);
   const rideRequests = useAppSelector(selectRideRequests);
   const selectedRide = useAppSelector(selectSelectedRide);
@@ -80,24 +81,26 @@ const DriveScreen: React.FC = () => {
 
   const handleAcceptRide = useCallback(() => {
     if (selectedRide) {
-      dispatch(acceptRide(selectedRide.id)); // Mark the ride as accepted in the redux store
-      router.push("/ongoing-ride"); // Navigate to the OngoingRide screen
+      dispatch(acceptRide(selectedRide.id));
+      router.push("/ongoing-ride");
     }
     bottomSheetRef.current?.close();
   }, [dispatch, selectedRide, router]);
 
   const handleRejectRide = useCallback(() => {
-    setSelectedRide(null);
+    if (selectedRide) {
+      dispatch(removeRideRequest(selectedRide.id));
+    }
+    dispatch(setSelectedRide(null));
     bottomSheetRef.current?.close();
-  }, [selectedRide]);
+  }, [dispatch, selectedRide]);
 
   const handleRideSelect = (ride: RideRequest) => {
-    dispatch(setSelectedRide(ride)); // Set the selected ride in Redux
+    dispatch(setSelectedRide(ride));
     bottomSheetRef.current?.present();
   };
 
   const handleCloseBottomSheet = () => {
-    // dispatch(setSelectedRide(null)); // Clear the selected ride in Redux
     bottomSheetRef.current?.dismiss();
   };
 
@@ -143,13 +146,11 @@ const DriveScreen: React.FC = () => {
           <Marker
             key={ride.id}
             coordinate={ride.pickupLocation}
-            title="Ride Request"
-            description={`Pickup: ${pickupNames[ride.id] || "Loading..."}`}
             onPress={() => handleRideSelect(ride)}
+            title="Ride Request"
           />
         ))}
       </MapView>
-
       <RideRequestBottomSheet
         selectedRide={selectedRide}
         pickupNames={pickupNames}

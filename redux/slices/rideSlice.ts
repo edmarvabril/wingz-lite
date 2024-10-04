@@ -22,10 +22,13 @@ const rideSlice = createSlice({
         ride.driverId = "currentDriverId";
       }
     },
-    declineRide: (state, action: PayloadAction<string>) => {
+    removeRideRequest: (state, action: PayloadAction<string>) => {
       state.rideRequests = state.rideRequests.filter(
         (ride) => ride.id !== action.payload
       );
+    },
+    setSelectedRide: (state, action: PayloadAction<RideRequest | null>) => {
+      state.selectedRide = action.payload;
     },
     completeRide: (state, action: PayloadAction<string>) => {
       const rideIndex = state.rideRequests.findIndex(
@@ -40,9 +43,6 @@ const rideSlice = createSlice({
         state.rideRequests.splice(rideIndex, 1);
       }
     },
-    setSelectedRide: (state, action: PayloadAction<RideRequest | null>) => {
-      state.selectedRide = action.payload;
-    },
     clearSelectedRide: (state) => {
       state.selectedRide = null;
     },
@@ -52,7 +52,7 @@ const rideSlice = createSlice({
 export const {
   setRideRequests,
   acceptRide,
-  declineRide,
+  removeRideRequest,
   completeRide,
   setSelectedRide,
   clearSelectedRide,
