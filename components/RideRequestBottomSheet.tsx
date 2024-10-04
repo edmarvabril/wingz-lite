@@ -37,15 +37,15 @@ export const RideRequestBottomSheet: React.FC<RideRequestBottomSheetProps> = ({
           <>
             <Text style={styles.sheetTitle}>Ride Request Details</Text>
             <View style={styles.infoSection}>
-              <Text style={styles.infoLabel}>Pickup Location:</Text>
+              <Text style={styles.infoLabel}>Pickup:</Text>
               <Text style={styles.infoText}>
                 {pickupNames[selectedRide.id] || "Loading..."}
               </Text>
-              <Text style={styles.infoLabel}>Destination Location:</Text>
+              <Text style={styles.infoLabel}>Destination:</Text>
               <Text style={styles.infoText}>
                 {destinationNames[selectedRide.id] || "Loading..."}
               </Text>
-              <Text style={styles.infoLabel}>Passenger Information:</Text>
+              <Text style={styles.infoLabel}>Passenger Info:</Text>
               <Text style={styles.infoText}>Name: {selectedRide.userName}</Text>
               <Text style={styles.infoText}>
                 Phone: {selectedRide.userPhone}
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     color: palette.darkGray,
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
   },
   buttonContainer: {
