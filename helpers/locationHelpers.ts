@@ -2,6 +2,7 @@ import * as Location from "expo-location";
 import { RideRequest } from "@/types/rideTypes";
 import { LatLng } from "react-native-maps";
 import { RideStatusEnum } from "@/enums/rideEnums";
+import Toast from "react-native-toast-message";
 
 export const fetchDriverLocation = async (): Promise<LatLng | null> => {
   try {
@@ -15,7 +16,11 @@ export const fetchDriverLocation = async (): Promise<LatLng | null> => {
       longitude: location.coords.longitude,
     };
   } catch (error) {
-    console.error("Error fetching driver location:", error);
+    Toast.show({
+      type: "error",
+      text1: "Location Error",
+      text2: "Failed to fetch location.",
+    });
     return null;
   }
 };
@@ -38,6 +43,11 @@ export const reverseGeocode = async (
     return "Unknown location";
   } catch (error) {
     console.error("Reverse geocoding error:", error);
+    Toast.show({
+      type: "error",
+      text1: "Reverse Geocoding Error",
+      text2: "Failed to fetch geolocation.",
+    });
     return "Unknown location";
   }
 };

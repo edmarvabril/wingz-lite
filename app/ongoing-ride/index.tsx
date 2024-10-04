@@ -15,6 +15,7 @@ import { completeRide, clearSelectedRide } from "@/redux/slices/rideSlice";
 import { fetchRouteBetweenPoints } from "@/helpers/directionsHelpers";
 import { palette } from "@/constants/colors";
 import { useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
 
 const OngoingRideScreen: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -45,6 +46,11 @@ const OngoingRideScreen: React.FC = () => {
         selectedRide.destination
       ).then(setRouteCoordinates);
     }
+    Toast.show({
+      type: "success",
+      text1: "Drive Started",
+      text2: "You have picked up the passenger.",
+    });
   }, [selectedRide]);
 
   const handleDropOffPassenger = useCallback(() => {
@@ -52,12 +58,22 @@ const OngoingRideScreen: React.FC = () => {
       dispatch(completeRide(selectedRide.id));
       dispatch(clearSelectedRide());
       router.back();
+      Toast.show({
+        type: "success",
+        text1: "Ride Completed",
+        text2: "You have successfully completed the ride.",
+      });
     }
   }, [dispatch, selectedRide, router]);
 
   const handleCancelRide = () => {
     dispatch(clearSelectedRide());
     router.back();
+    Toast.show({
+      type: "info",
+      text1: "Drive Canceled",
+      text2: "You have canceled the ride.",
+    });
   };
 
   if (!selectedRide) {
