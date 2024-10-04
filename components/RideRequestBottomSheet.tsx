@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { RideRequest } from "@/types/rideTypes";
+import { Ionicons } from "@expo/vector-icons";
+import { palette } from "@/constants/colors";
 
 interface RideRequestBottomSheetProps {
   selectedRide: RideRequest | null;
@@ -22,12 +24,12 @@ export const RideRequestBottomSheet: React.FC<RideRequestBottomSheetProps> = ({
   onDeclineRide,
   onClose,
 }) => {
-  const snapPoints = ["25%", "70%"];
+  const snapPoints = ["55%"];
 
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      index={1}
+      index={0}
       snapPoints={snapPoints}
       onDismiss={onClose}
     >
@@ -35,24 +37,39 @@ export const RideRequestBottomSheet: React.FC<RideRequestBottomSheetProps> = ({
         {selectedRide ? (
           <>
             <Text style={styles.sheetTitle}>Ride Request Details</Text>
-
-            <Text style={styles.infoLabel}>Pickup Location:</Text>
-            <Text>{pickupNames[selectedRide.id] || "Loading..."}</Text>
-
-            <Text style={styles.infoLabel}>Destination Location:</Text>
-            <Text>{destinationNames[selectedRide.id] || "Loading..."}</Text>
-
-            <Text style={styles.infoLabel}>User Information:</Text>
-            <Text>User: {selectedRide.userName}</Text>
-            <Text>Phone: {selectedRide.userPhone}</Text>
+            <View style={styles.infoSection}>
+              <Text style={styles.infoLabel}>Pickup Location:</Text>
+              <Text style={styles.infoText}>
+                {pickupNames[selectedRide.id] || "Loading..."}
+              </Text>
+              <Text style={styles.infoLabel}>Destination Location:</Text>
+              <Text style={styles.infoText}>
+                {destinationNames[selectedRide.id] || "Loading..."}
+              </Text>
+              <Text style={styles.infoLabel}>User Information:</Text>
+              <Text style={styles.infoText}>User: {selectedRide.userName}</Text>
+              <Text style={styles.infoText}>
+                Phone: {selectedRide.userPhone}
+              </Text>
+            </View>
 
             <View style={styles.buttonContainer}>
-              <Button title="Accept Ride" onPress={onAcceptRide} />
-              <Button title="Decline Ride" onPress={onDeclineRide} />
+              <TouchableOpacity
+                style={styles.acceptButton}
+                onPress={onAcceptRide}
+              >
+                <Text style={styles.buttonText}>Accept</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.declineButton}
+                onPress={onDeclineRide}
+              >
+                <Text style={styles.buttonText}>Decline</Text>
+              </TouchableOpacity>
             </View>
           </>
         ) : (
-          <Text>No ride selected</Text>
+          <Text style={styles.noRideText}>No ride selected</Text>
         )}
       </BottomSheetView>
     </BottomSheetModal>
@@ -65,6 +82,7 @@ const styles = StyleSheet.create({
   sheetContent: {
     flex: 1,
     padding: 20,
+    backgroundColor: palette.white,
   },
   closeButton: {
     position: "absolute",
@@ -73,19 +91,57 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   sheetTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: palette.darkBlue,
+    marginBottom: 20,
     textAlign: "center",
+  },
+  infoSection: {
+    marginBottom: 20,
   },
   infoLabel: {
     fontWeight: "bold",
+    color: palette.darkBlue,
     marginTop: 10,
+  },
+  infoText: {
+    color: palette.darkGray,
+    fontSize: 16,
+    marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
+    justifyContent: "space-between",
     marginTop: 20,
+  },
+  acceptButton: {
+    backgroundColor: palette.brightGreen,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    flex: 2,
+    marginRight: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  declineButton: {
+    backgroundColor: palette.red,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  buttonText: {
+    color: palette.white,
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  noRideText: {
+    fontSize: 16,
+    color: palette.darkGray,
+    textAlign: "center",
   },
 });
