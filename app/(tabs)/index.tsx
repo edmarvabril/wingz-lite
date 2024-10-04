@@ -80,8 +80,8 @@ const DriveScreen: React.FC = () => {
 
   const handleAcceptRide = useCallback(() => {
     if (selectedRide) {
-      dispatch(acceptRide(selectedRide.id)); // Mark the ride as accepted in the redux store
-      router.push("/ongoing-ride"); // Navigate to the OngoingRide screen
+      dispatch(acceptRide(selectedRide.id));
+      router.push("/ongoing-ride");
     }
     bottomSheetRef.current?.close();
   }, [dispatch, selectedRide, router]);
@@ -92,12 +92,11 @@ const DriveScreen: React.FC = () => {
   }, [selectedRide]);
 
   const handleRideSelect = (ride: RideRequest) => {
-    dispatch(setSelectedRide(ride)); // Set the selected ride in Redux
+    dispatch(setSelectedRide(ride));
     bottomSheetRef.current?.present();
   };
 
   const handleCloseBottomSheet = () => {
-    // dispatch(setSelectedRide(null)); // Clear the selected ride in Redux
     bottomSheetRef.current?.dismiss();
   };
 
@@ -143,8 +142,6 @@ const DriveScreen: React.FC = () => {
           <Marker
             key={ride.id}
             coordinate={ride.pickupLocation}
-            title="Ride Request"
-            description={`Pickup: ${pickupNames[ride.id] || "Loading..."}`}
             onPress={() => handleRideSelect(ride)}
           />
         ))}
