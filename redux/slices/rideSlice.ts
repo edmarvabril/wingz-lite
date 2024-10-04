@@ -5,6 +5,7 @@ import { RideStatusEnum } from "@/enums/rideEnums";
 const initialState: RideState = {
   rideRequests: [],
   completedRides: [],
+  selectedRide: null,
 };
 
 const rideSlice = createSlice({
@@ -39,10 +40,22 @@ const rideSlice = createSlice({
         state.rideRequests.splice(rideIndex, 1);
       }
     },
+    setSelectedRide: (state, action: PayloadAction<RideRequest | null>) => {
+      state.selectedRide = action.payload;
+    },
+    clearSelectedRide: (state) => {
+      state.selectedRide = null;
+    },
   },
 });
 
-export const { setRideRequests, acceptRide, declineRide, completeRide } =
-  rideSlice.actions;
+export const {
+  setRideRequests,
+  acceptRide,
+  declineRide,
+  completeRide,
+  setSelectedRide,
+  clearSelectedRide,
+} = rideSlice.actions;
 
 export default rideSlice.reducer;

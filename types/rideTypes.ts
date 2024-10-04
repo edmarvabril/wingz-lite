@@ -17,4 +17,5 @@ export interface RideRequest {
 export interface RideState {
   rideRequests: RideRequest[];
   completedRides: RideRequest[];
+  selectedRide: RideRequest | null;
 }

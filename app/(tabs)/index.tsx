@@ -1,14 +1,18 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { StatusBar } from "expo-status-bar";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { selectDriverLocation } from "@/redux/selectors/driverSelectors";
-import { selectRideRequests } from "@/redux/selectors/rideSelectors";
+import {
+  selectRideRequests,
+  selectSelectedRide,
+} from "@/redux/selectors/rideSelectors";
 import { setDriverLocation } from "@/redux/slices/driverSlice";
 import {
   setRideRequests,
   acceptRide,
-  declineRide,
+  setSelectedRide,
 } from "@/redux/slices/rideSlice";
 import {
   fetchDriverLocation,
@@ -17,22 +21,22 @@ import {
 } from "@/helpers/locationHelpers";
 import { RideRequest } from "@/types/rideTypes";
 import { FetchingLocation } from "@/components/FetchingLocation";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RideRequestBottomSheet } from "@/components/RideRequestBottomSheet";
-import { palette } from "@/constants/colors";
-import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router"; // Import useRouter for navigation
 
 const DriveScreen: React.FC = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter(); // Get the router instance for navigation
   const driverLocation = useAppSelector(selectDriverLocation);
   const rideRequests = useAppSelector(selectRideRequests);
+  const selectedRide = useAppSelector(selectSelectedRide);
 
   const [locationError, setLocationError] = useState<string | null>(null);
   const [pickupNames, setPickupNames] = useState<{ [key: string]: string }>({});
   const [destinationNames, setDestinationNames] = useState<{
     [key: string]: string;
   }>({});
-  const [selectedRide, setSelectedRide] = useState<RideRequest | null>(null);
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -76,28 +80,24 @@ const DriveScreen: React.FC = () => {
 
   const handleAcceptRide = useCallback(() => {
     if (selectedRide) {
-      dispatch(acceptRide(selectedRide.id));
-      console.log(`Accepted ride ${selectedRide.id}`);
+      dispatch(acceptRide(selectedRide.id)); // Mark the ride as accepted in the redux store
+      router.push("/ongoing-ride"); // Navigate to the OngoingRide screen
     }
     bottomSheetRef.current?.close();
-  }, [dispatch, selectedRide]);
+  }, [dispatch, selectedRide, router]);
 
-  const handleDeclineRide = useCallback(() => {
-    if (selectedRide) {
-      dispatch(declineRide(selectedRide.id));
-      console.log(`Declined ride ${selectedRide.id}`);
-    }
+  const handleRejectRide = useCallback(() => {
     setSelectedRide(null);
     bottomSheetRef.current?.close();
-  }, [dispatch, selectedRide]);
+  }, [selectedRide]);
 
   const handleRideSelect = (ride: RideRequest) => {
-    setSelectedRide(ride);
+    dispatch(setSelectedRide(ride)); // Set the selected ride in Redux
     bottomSheetRef.current?.present();
   };
 
   const handleCloseBottomSheet = () => {
-    setSelectedRide(null);
+    // dispatch(setSelectedRide(null)); // Clear the selected ride in Redux
     bottomSheetRef.current?.dismiss();
   };
 
@@ -136,7 +136,7 @@ const DriveScreen: React.FC = () => {
           }}
           title="You are here"
           description="Driver's current location"
-          pinColor={palette.brightGreen}
+          pinColor="green"
         />
 
         {rideRequests.map((ride) => (
@@ -146,17 +146,17 @@ const DriveScreen: React.FC = () => {
             title="Ride Request"
             description={`Pickup: ${pickupNames[ride.id] || "Loading..."}`}
             onPress={() => handleRideSelect(ride)}
-            pinColor={palette.red}
           />
         ))}
       </MapView>
+
       <RideRequestBottomSheet
         selectedRide={selectedRide}
         pickupNames={pickupNames}
         destinationNames={destinationNames}
         bottomSheetRef={bottomSheetRef}
         onAcceptRide={handleAcceptRide}
-        onDeclineRide={handleDeclineRide}
+        onDeclineRide={handleRejectRide}
         onClose={handleCloseBottomSheet}
       />
     </View>
