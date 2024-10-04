@@ -1,6 +1,7 @@
 import * as Location from "expo-location";
 import { RideRequest } from "@/types/rideTypes";
 import { LatLng } from "react-native-maps";
+import { RideStatusEnum } from "@/enums/rideEnums";
 
 export const fetchDriverLocation = async (): Promise<LatLng | null> => {
   try {
@@ -57,7 +58,7 @@ export const generateMockRideRequests = (location: LatLng): RideRequest[] => {
         latitude: location.latitude + 0.01,
         longitude: location.longitude + 0.1,
       },
-      status: "pending",
+      status: RideStatusEnum.Pending,
       pickupTime: new Date().toISOString(),
       timestamp: new Date().toISOString(),
     },
@@ -75,7 +76,7 @@ export const generateMockRideRequests = (location: LatLng): RideRequest[] => {
         latitude: location.latitude + 0.06,
         longitude: location.longitude + 0.06,
       },
-      status: "pending",
+      status: RideStatusEnum.Pending,
       pickupTime: new Date().toISOString(),
       timestamp: new Date().toISOString(),
     },
@@ -93,7 +94,43 @@ export const generateMockRideRequests = (location: LatLng): RideRequest[] => {
         latitude: location.latitude + 0.07,
         longitude: location.longitude + 0.07,
       },
-      status: "pending",
+      status: RideStatusEnum.Pending,
+      pickupTime: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
+    },
+    {
+      id: "4",
+      userId: "444",
+      userName: "Natasha Romanoff",
+      userPhone: "+1-555-555-5556",
+      driverId: null,
+      pickupLocation: {
+        latitude: location.latitude - 0.0031,
+        longitude: location.longitude - 0.013,
+      },
+      destination: {
+        latitude: location.latitude + 0.07,
+        longitude: location.longitude + 0.07,
+      },
+      status: RideStatusEnum.Pending,
+      pickupTime: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
+    },
+    {
+      id: "5",
+      userId: "555",
+      userName: "Peter Parker",
+      userPhone: "+1-555-555-5556",
+      driverId: null,
+      pickupLocation: {
+        latitude: location.latitude - 0.00414,
+        longitude: location.longitude + 0.001,
+      },
+      destination: {
+        latitude: location.latitude + 0.06,
+        longitude: location.longitude + 0.06,
+      },
+      status: RideStatusEnum.Pending,
       pickupTime: new Date().toISOString(),
       timestamp: new Date().toISOString(),
     },

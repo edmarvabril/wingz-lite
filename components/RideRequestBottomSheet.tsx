@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { RideRequest } from "@/types/rideTypes";
-import { Ionicons } from "@expo/vector-icons";
 import { palette } from "@/constants/colors";
 
 interface RideRequestBottomSheetProps {
@@ -46,8 +45,8 @@ export const RideRequestBottomSheet: React.FC<RideRequestBottomSheetProps> = ({
               <Text style={styles.infoText}>
                 {destinationNames[selectedRide.id] || "Loading..."}
               </Text>
-              <Text style={styles.infoLabel}>User Information:</Text>
-              <Text style={styles.infoText}>User: {selectedRide.userName}</Text>
+              <Text style={styles.infoLabel}>Passenger Information:</Text>
+              <Text style={styles.infoText}>Name: {selectedRide.userName}</Text>
               <Text style={styles.infoText}>
                 Phone: {selectedRide.userPhone}
               </Text>
@@ -103,6 +102,7 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontWeight: "bold",
     color: palette.darkBlue,
+    fontSize: 18,
     marginTop: 10,
   },
   infoText: {

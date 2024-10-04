@@ -1,6 +1,6 @@
-import { RideStatusEnum } from "@/enums/rideEnums";
-import { RideState, RideRequest } from "@/types/rideTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RideState, RideRequest } from "@/types/rideTypes";
+import { RideStatusEnum } from "@/enums/rideEnums";
 
 const initialState: RideState = {
   rideRequests: [],
@@ -14,26 +14,18 @@ const rideSlice = createSlice({
     setRideRequests: (state, action: PayloadAction<RideRequest[]>) => {
       state.rideRequests = action.payload;
     },
-
     acceptRide: (state, action: PayloadAction<string>) => {
-      const rideIndex = state.rideRequests.findIndex(
-        (ride) => ride.id === action.payload
-      );
-      if (rideIndex !== -1) {
-        state.rideRequests[rideIndex].status = RideStatusEnum.Accepted;
-        state.rideRequests[rideIndex].driverId = "currentDriverId";
+      const ride = state.rideRequests.find((r) => r.id === action.payload);
+      if (ride) {
+        ride.status = RideStatusEnum.Accepted;
+        ride.driverId = "currentDriverId";
       }
     },
-
     declineRide: (state, action: PayloadAction<string>) => {
-      const rideIndex = state.rideRequests.findIndex(
-        (ride) => ride.id === action.payload
+      state.rideRequests = state.rideRequests.filter(
+        (ride) => ride.id !== action.payload
       );
-      if (rideIndex !== -1) {
-        state.rideRequests[rideIndex].status = RideStatusEnum.Declined;
-      }
     },
-
     completeRide: (state, action: PayloadAction<string>) => {
       const rideIndex = state.rideRequests.findIndex(
         (ride) => ride.id === action.payload

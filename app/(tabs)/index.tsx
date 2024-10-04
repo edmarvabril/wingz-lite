@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { StatusBar } from "expo-status-bar";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { selectDriverLocation } from "@/redux/selectors/driverSelectors";
 import { selectRideRequests } from "@/redux/selectors/rideSelectors";
@@ -21,6 +20,7 @@ import { FetchingLocation } from "@/components/FetchingLocation";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RideRequestBottomSheet } from "@/components/RideRequestBottomSheet";
 import { palette } from "@/constants/colors";
+import { StatusBar } from "expo-status-bar";
 
 const DriveScreen: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -35,9 +35,6 @@ const DriveScreen: React.FC = () => {
   const [selectedRide, setSelectedRide] = useState<RideRequest | null>(null);
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-
-  const forLogging = rideRequests.map((item) => item.status);
-  console.log(forLogging);
 
   useEffect(() => {
     (async () => {
