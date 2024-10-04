@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { StatusBar } from "expo-status-bar";
@@ -6,7 +6,11 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { selectDriverLocation } from "@/redux/selectors/driverSelectors";
 import { selectRideRequests } from "@/redux/selectors/rideSelectors";
 import { setDriverLocation } from "@/redux/slices/driverSlice";
-import { setRideRequests } from "@/redux/slices/rideSlice";
+import {
+  setRideRequests,
+  acceptRide,
+  declineRide,
+} from "@/redux/slices/rideSlice";
 import {
   fetchDriverLocation,
   generateMockRideRequests,
@@ -14,6 +18,9 @@ import {
 } from "@/helpers/locationHelpers";
 import { RideRequest } from "@/types/rideTypes";
 import { FetchingLocation } from "@/components/FetchingLocation";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { RideRequestBottomSheet } from "@/components/RideRequestBottomSheet";
+import { palette } from "@/constants/colors";
 
 const DriveScreen: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +29,15 @@ const DriveScreen: React.FC = () => {
 
   const [locationError, setLocationError] = useState<string | null>(null);
   const [pickupNames, setPickupNames] = useState<{ [key: string]: string }>({});
+  const [destinationNames, setDestinationNames] = useState<{
+    [key: string]: string;
+  }>({});
+  const [selectedRide, setSelectedRide] = useState<RideRequest | null>(null);
+
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  const forLogging = rideRequests.map((item) => item.status);
+  console.log(forLogging);
 
   useEffect(() => {
     (async () => {
@@ -39,11 +55,20 @@ const DriveScreen: React.FC = () => {
         dispatch(setRideRequests(mockRideRequests));
 
         for (let ride of mockRideRequests) {
-          const address = await reverseGeocode(
+          const pickupAddress = await reverseGeocode(
             ride.pickupLocation.latitude,
             ride.pickupLocation.longitude
           );
-          setPickupNames((prev) => ({ ...prev, [ride.id]: address }));
+          setPickupNames((prev) => ({ ...prev, [ride.id]: pickupAddress }));
+
+          const destinationAddress = await reverseGeocode(
+            ride.destination.latitude,
+            ride.destination.longitude
+          );
+          setDestinationNames((prev) => ({
+            ...prev,
+            [ride.id]: destinationAddress,
+          }));
         }
       } catch (error) {
         console.error("Error during location fetching:", error);
@@ -51,6 +76,33 @@ const DriveScreen: React.FC = () => {
       }
     })();
   }, [dispatch]);
+
+  const handleAcceptRide = useCallback(() => {
+    if (selectedRide) {
+      dispatch(acceptRide(selectedRide.id));
+      console.log(`Accepted ride ${selectedRide.id}`);
+    }
+    bottomSheetRef.current?.close();
+  }, [dispatch, selectedRide]);
+
+  const handleDeclineRide = useCallback(() => {
+    if (selectedRide) {
+      dispatch(declineRide(selectedRide.id));
+      console.log(`Declined ride ${selectedRide.id}`);
+    }
+    setSelectedRide(null);
+    bottomSheetRef.current?.close();
+  }, [dispatch, selectedRide]);
+
+  const handleRideSelect = (ride: RideRequest) => {
+    setSelectedRide(ride);
+    bottomSheetRef.current?.present();
+  };
+
+  const handleCloseBottomSheet = () => {
+    setSelectedRide(null);
+    bottomSheetRef.current?.dismiss();
+  };
 
   if (locationError) {
     return (
@@ -87,7 +139,7 @@ const DriveScreen: React.FC = () => {
           }}
           title="You are here"
           description="Driver's current location"
-          pinColor="green"
+          pinColor={palette.brightGreen}
         />
 
         {rideRequests.map((ride) => (
@@ -96,10 +148,20 @@ const DriveScreen: React.FC = () => {
             coordinate={ride.pickupLocation}
             title="Ride Request"
             description={`Pickup: ${pickupNames[ride.id] || "Loading..."}`}
-            onPress={() => console.log(`Ride request ${ride.id} selected`)}
+            onPress={() => handleRideSelect(ride)}
+            pinColor={palette.red}
           />
         ))}
       </MapView>
+      <RideRequestBottomSheet
+        selectedRide={selectedRide}
+        pickupNames={pickupNames}
+        destinationNames={destinationNames}
+        bottomSheetRef={bottomSheetRef}
+        onAcceptRide={handleAcceptRide}
+        onDeclineRide={handleDeclineRide}
+        onClose={handleCloseBottomSheet}
+      />
     </View>
   );
 };
@@ -122,10 +184,5 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: "red",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
