@@ -25,6 +25,7 @@ import { FetchingLocation } from "@/components/FetchingLocation";
 import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RideRequestBottomSheet } from "@/components/RideRequestBottomSheet";
 import { useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
 
 const DriveScreen: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -73,15 +74,39 @@ const DriveScreen: React.FC = () => {
           }));
         }
       } catch (error) {
-        console.error("Error during location fetching:", error);
+        Toast.show({
+          type: "error",
+          text1: "Location Error",
+          text2: "Failed to fetch location.",
+        });
         setLocationError("Failed to fetch location.");
       }
     })();
   }, [dispatch]);
 
+  useEffect(() => {
+    if (rideRequests.length === 0) {
+      Toast.show({
+        type: "error",
+        text1: "No Available Rides",
+        text2: "There are no more available ride requests.",
+        position: "bottom",
+        autoHide: false,
+        bottomOffset: 120,
+      });
+    }
+  }, [rideRequests]);
+
   const handleAcceptRide = useCallback(() => {
     if (selectedRide) {
       dispatch(acceptRide(selectedRide.id));
+      Toast.show({
+        type: "success",
+        text1: "Ride Accepted",
+        text2: `You have accepted the ride to ${
+          destinationNames[selectedRide.id]
+        }`,
+      });
       router.push("/ongoing-ride");
     }
     bottomSheetRef.current?.close();
@@ -89,6 +114,11 @@ const DriveScreen: React.FC = () => {
 
   const handleRejectRide = useCallback(() => {
     if (selectedRide) {
+      Toast.show({
+        type: "info",
+        text1: "Ride Declined",
+        text2: "You have declined the ride request.",
+      });
       dispatch(removeRideRequest(selectedRide.id));
     }
     dispatch(setSelectedRide(null));
