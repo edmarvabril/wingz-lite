@@ -94,6 +94,8 @@ const DriveScreen: React.FC = () => {
         autoHide: false,
         bottomOffset: 120,
       });
+    } else {
+      Toast.hide();
     }
   }, [rideRequests]);
 

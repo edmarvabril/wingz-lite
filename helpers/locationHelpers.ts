@@ -42,11 +42,13 @@ export const reverseGeocode = async (
     }
     return "Unknown location";
   } catch (error) {
-    console.error("Reverse geocoding error:", error);
     Toast.show({
       type: "error",
       text1: "Reverse Geocoding Error",
       text2: "Failed to fetch geolocation.",
+      position: "bottom",
+      autoHide: false,
+      bottomOffset: 120,
     });
     return "Unknown location";
   }
