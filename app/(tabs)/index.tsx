@@ -22,7 +22,7 @@ import {
 } from "@/helpers/locationHelpers";
 import { RideRequest } from "@/types/rideTypes";
 import { FetchingLocation } from "@/components/FetchingLocation";
-import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RideRequestBottomSheet } from "@/components/RideRequestBottomSheet";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
@@ -30,6 +30,8 @@ import Toast from "react-native-toast-message";
 const DriveScreen: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const isInitialMount = useRef(true);
+
   const driverLocation = useAppSelector(selectDriverLocation);
   const rideRequests = useAppSelector(selectRideRequests);
   const selectedRide = useAppSelector(selectSelectedRide);
@@ -85,17 +87,20 @@ const DriveScreen: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     if (rideRequests.length === 0) {
       Toast.show({
         type: "error",
         text1: "No Available Rides",
-        text2: "There are no more available ride requests.",
+        text2: "There are no available ride requests.",
         position: "bottom",
         autoHide: false,
         bottomOffset: 120,
       });
-    } else {
-      Toast.hide();
     }
   }, [rideRequests]);
 
